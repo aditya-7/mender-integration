@@ -2,19 +2,23 @@ version: '2'
 services:
 
     mender-useradm:
+        image: mendersoftware/useradm
         command: server --automigrate
         volumes:
             - ./keys/useradm/private.key:/etc/useradm/rsa/private.pem
 
     mender-device-auth:
+        image: mendersoftware/deviceauth
         command: server --automigrate
         volumes:
             - ./keys/deviceauth/private.key:/etc/deviceauth/rsa/private.pem
 
     mender-inventory:
+        image: mendersoftware/inventory
         command: server --automigrate
 
     mender-api-gateway:
+        image: mendersoftware/api-gateway
         ports:
             - "443:443"
         networks:
@@ -28,6 +32,7 @@ services:
             ALLOWED_HOSTS: localhost docker.mender.io
 
     storage-proxy:
+        image: openresty/openresty:1.13.6.2-0-alpine
         ports:
             - "9000:9000"
         networks:
@@ -48,6 +53,7 @@ services:
             - ./certs/storage-proxy/private.key:/var/www/storage-proxy/cert/private.key
 
     mender-deployments:
+        image: mendersoftware/deployments
         command: server --automigrate
         volumes:
             - ./certs/storage-proxy/cert.crt:/etc/ssl/certs/s3.docker.mender.io.crt
@@ -58,6 +64,7 @@ services:
             DEPLOYMENTS_AWS_URI: https://s3.docker.mender.io:9000
 
     minio:
+        image: minio/minio
         networks:
             mender:
                 aliases:
@@ -67,11 +74,13 @@ services:
             MINIO_SECRET_KEY: minio123
 
     mender-gui:
+        image: mendersoftware/gui
         environment:
             # enable demo mode for UI ["true"/"false"]
             DEMO: "true"
 
     mender-conductor:
+        image: mendersoftware/mender-conductor:master
         volumes:
             - ./conductor/server/config:/app/config
         environment:
@@ -80,6 +89,7 @@ services:
             - "8080:8080"
 
     mender-redis:
+        image: redis
         volumes:
             - ./conductor/redis/redis.conf:/etc/redis/redis.conf
             - ./conductor/redis/entrypoint.sh:/redis/entrypoint.sh

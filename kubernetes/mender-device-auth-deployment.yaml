@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-device-auth
+  name: mender-device-auth
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-device-auth
+    spec:
+      containers:
+      - args:
+        - server
+        - --automigrate
+        image: mendersoftware/deviceauth
+        name: mender-device-auth
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/deviceauth/rsa/private.pem
+          name: mender-device-auth-claim0
+      restartPolicy: Always
+      volumes:
+      - name: mender-device-auth-claim0
+        persistentVolumeClaim:
+          claimName: mender-device-auth-claim0
+status: {}

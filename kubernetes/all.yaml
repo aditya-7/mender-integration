@@ -1,0 +1,608 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-api-gateway-claim0
+  name: mender-api-gateway-claim0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-api-gateway-claim1
+  name: mender-api-gateway-claim1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-api-gateway
+  name: mender-api-gateway
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-api-gateway
+    spec:
+      containers:
+      - env:
+        - name: ALLOWED_HOSTS
+          value: localhost docker.mender.io
+        image: mendersoftware/api-gateway
+        name: mender-api-gateway
+        ports:
+        - containerPort: 443
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/www/mendersoftware/cert/cert.crt
+          name: mender-api-gateway-claim0
+        - mountPath: /var/www/mendersoftware/cert/private.key
+          name: mender-api-gateway-claim1
+      restartPolicy: Always
+      volumes:
+      - name: mender-api-gateway-claim0
+        persistentVolumeClaim:
+          claimName: mender-api-gateway-claim0
+      - name: mender-api-gateway-claim1
+        persistentVolumeClaim:
+          claimName: mender-api-gateway-claim1
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-api-gateway
+  name: mender-api-gateway
+spec:
+  ports:
+  - name: "443"
+    port: 443
+    targetPort: 443
+  selector:
+    io.kompose.service: mender-api-gateway
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-conductor-claim0
+  name: mender-conductor-claim0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-conductor
+  name: mender-conductor
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-conductor
+    spec:
+      containers:
+      - env:
+        - name: CONFIG_PROP
+          value: config.properties
+        image: mendersoftware/mender-conductor:master
+        name: mender-conductor
+        ports:
+        - containerPort: 8080
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/config
+          name: mender-conductor-claim0
+      restartPolicy: Always
+      volumes:
+      - name: mender-conductor-claim0
+        persistentVolumeClaim:
+          claimName: mender-conductor-claim0
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-conductor
+  name: mender-conductor
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+  selector:
+    io.kompose.service: mender-conductor
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-deployments-claim0
+  name: mender-deployments-claim0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-deployments
+  name: mender-deployments
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-deployments
+    spec:
+      containers:
+      - args:
+        - server
+        - --automigrate
+        env:
+        - name: DEPLOYMENTS_AWS_AUTH_KEY
+          value: minio
+        - name: DEPLOYMENTS_AWS_AUTH_SECRET
+          value: minio123
+        - name: DEPLOYMENTS_AWS_URI
+          value: https://s3.docker.mender.io:9000
+        - name: STORAGE_BACKEND_CERT
+          value: /etc/ssl/certs/s3.docker.mender.io.crt
+        image: mendersoftware/deployments
+        name: mender-deployments
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/ssl/certs/s3.docker.mender.io.crt
+          name: mender-deployments-claim0
+      restartPolicy: Always
+      volumes:
+      - name: mender-deployments-claim0
+        persistentVolumeClaim:
+          claimName: mender-deployments-claim0
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-device-auth-claim0
+  name: mender-device-auth-claim0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-device-auth
+  name: mender-device-auth
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-device-auth
+    spec:
+      containers:
+      - args:
+        - server
+        - --automigrate
+        image: mendersoftware/deviceauth
+        name: mender-device-auth
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/deviceauth/rsa/private.pem
+          name: mender-device-auth-claim0
+      restartPolicy: Always
+      volumes:
+      - name: mender-device-auth-claim0
+        persistentVolumeClaim:
+          claimName: mender-device-auth-claim0
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-gui
+  name: mender-gui
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-gui
+    spec:
+      containers:
+      - env:
+        - name: DEMO
+          value: "true"
+        image: mendersoftware/gui
+        name: mender-gui
+        resources: {}
+      restartPolicy: Always
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-inventory
+  name: mender-inventory
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-inventory
+    spec:
+      containers:
+      - args:
+        - server
+        - --automigrate
+        image: mendersoftware/inventory
+        name: mender-inventory
+        resources: {}
+      restartPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-redis-claim0
+  name: mender-redis-claim0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-redis-claim1
+  name: mender-redis-claim1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-redis-claim2
+  name: mender-redis-claim2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-redis
+  name: mender-redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-redis
+    spec:
+      containers:
+      - command:
+        - /redis/entrypoint.sh
+        image: redis
+        name: mender-redis
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/redis/redis.conf
+          name: mender-redis-claim0
+        - mountPath: /redis/entrypoint.sh
+          name: mender-redis-claim1
+        - mountPath: /var/lib/redis
+          name: mender-redis-claim2
+      restartPolicy: Always
+      volumes:
+      - name: mender-redis-claim0
+        persistentVolumeClaim:
+          claimName: mender-redis-claim0
+      - name: mender-redis-claim1
+        persistentVolumeClaim:
+          claimName: mender-redis-claim1
+      - name: mender-redis-claim2
+        persistentVolumeClaim:
+          claimName: mender-redis-claim2
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-useradm-claim0
+  name: mender-useradm-claim0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-useradm
+  name: mender-useradm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-useradm
+    spec:
+      containers:
+      - args:
+        - server
+        - --automigrate
+        image: mendersoftware/useradm
+        name: mender-useradm
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/useradm/rsa/private.pem
+          name: mender-useradm-claim0
+      restartPolicy: Always
+      volumes:
+      - name: mender-useradm-claim0
+        persistentVolumeClaim:
+          claimName: mender-useradm-claim0
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: minio
+  name: minio
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: minio
+    spec:
+      containers:
+      - env:
+        - name: MINIO_ACCESS_KEY
+          value: minio
+        - name: MINIO_SECRET_KEY
+          value: minio123
+        image: minio/minio
+        name: minio
+        resources: {}
+      restartPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: storage-proxy-claim0
+  name: storage-proxy-claim0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: storage-proxy-claim1
+  name: storage-proxy-claim1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: storage-proxy
+  name: storage-proxy
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: storage-proxy
+    spec:
+      containers:
+      - env:
+        - name: DOWNLOAD_SPEED
+          value: 3m
+        - name: MAX_CONNECTIONS
+          value: "30"
+        image: openresty/openresty:1.13.6.2-0-alpine
+        name: storage-proxy
+        ports:
+        - containerPort: 9000
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/www/storage-proxy/cert/cert.crt
+          name: storage-proxy-claim0
+        - mountPath: /var/www/storage-proxy/cert/private.key
+          name: storage-proxy-claim1
+      restartPolicy: Always
+      volumes:
+      - name: storage-proxy-claim0
+        persistentVolumeClaim:
+          claimName: storage-proxy-claim0
+      - name: storage-proxy-claim1
+        persistentVolumeClaim:
+          claimName: storage-proxy-claim1
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: storage-proxy
+  name: storage-proxy
+spec:
+  ports:
+  - name: "9000"
+    port: 9000
+    targetPort: 9000
+  selector:
+    io.kompose.service: storage-proxy
+status:
+  loadBalancer: {}

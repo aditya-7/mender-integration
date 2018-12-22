@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-redis
+  name: mender-redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-redis
+    spec:
+      containers:
+      - command:
+        - /redis/entrypoint.sh
+        image: redis
+        name: mender-redis
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/redis/redis.conf
+          name: mender-redis-claim0
+        - mountPath: /redis/entrypoint.sh
+          name: mender-redis-claim1
+        - mountPath: /var/lib/redis
+          name: mender-redis-claim2
+      restartPolicy: Always
+      volumes:
+      - name: mender-redis-claim0
+        persistentVolumeClaim:
+          claimName: mender-redis-claim0
+      - name: mender-redis-claim1
+        persistentVolumeClaim:
+          claimName: mender-redis-claim1
+      - name: mender-redis-claim2
+        persistentVolumeClaim:
+          claimName: mender-redis-claim2
+status: {}

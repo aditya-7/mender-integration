@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-api-gateway
+  name: mender-api-gateway
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-api-gateway
+    spec:
+      containers:
+      - env:
+        - name: ALLOWED_HOSTS
+          value: localhost docker.mender.io
+        image: mendersoftware/api-gateway
+        name: mender-api-gateway
+        ports:
+        - containerPort: 443
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/www/mendersoftware/cert/cert.crt
+          name: mender-api-gateway-claim0
+        - mountPath: /var/www/mendersoftware/cert/private.key
+          name: mender-api-gateway-claim1
+      restartPolicy: Always
+      volumes:
+      - name: mender-api-gateway-claim0
+        persistentVolumeClaim:
+          claimName: mender-api-gateway-claim0
+      - name: mender-api-gateway-claim1
+        persistentVolumeClaim:
+          claimName: mender-api-gateway-claim1
+status: {}

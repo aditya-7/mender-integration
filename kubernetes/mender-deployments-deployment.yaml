@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-deployments
+  name: mender-deployments
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mender-deployments
+    spec:
+      containers:
+      - args:
+        - server
+        - --automigrate
+        env:
+        - name: DEPLOYMENTS_AWS_AUTH_KEY
+          value: minio
+        - name: DEPLOYMENTS_AWS_AUTH_SECRET
+          value: minio123
+        - name: DEPLOYMENTS_AWS_URI
+          value: https://s3.docker.mender.io:9000
+        - name: STORAGE_BACKEND_CERT
+          value: /etc/ssl/certs/s3.docker.mender.io.crt
+        image: mendersoftware/deployments
+        name: mender-deployments
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/ssl/certs/s3.docker.mender.io.crt
+          name: mender-deployments-claim0
+      restartPolicy: Always
+      volumes:
+      - name: mender-deployments-claim0
+        persistentVolumeClaim:
+          claimName: mender-deployments-claim0
+status: {}
