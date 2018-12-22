@@ -1,4 +1,169 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0001
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0001
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0002
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0002
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0003
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0003
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0004
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0004
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0005
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0005
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0006
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0006
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0007
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0007
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0008
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0008
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0009
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0009
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0010
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0010
+  }
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0011
+spec:
+  capacity:
+    storage: 214748364800m
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath: {
+    path: /mnt/pv0011
+  }
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
@@ -62,7 +227,7 @@ spec:
           name: mender-api-gateway-claim0
         - mountPath: /var/www/mendersoftware/cert/private.key
           name: mender-api-gateway-claim1
-      restartPolicy: Always
+      # restartPolicy: Always
       volumes:
       - name: mender-api-gateway-claim0
         persistentVolumeClaim:
@@ -139,7 +304,7 @@ spec:
         volumeMounts:
         - mountPath: /app/config
           name: mender-conductor-claim0
-      restartPolicy: Always
+      # restartPolicy: Always
       volumes:
       - name: mender-conductor-claim0
         persistentVolumeClaim:
@@ -220,7 +385,7 @@ spec:
         volumeMounts:
         - mountPath: /etc/ssl/certs/s3.docker.mender.io.crt
           name: mender-deployments-claim0
-      restartPolicy: Always
+      # restartPolicy: Always
       volumes:
       - name: mender-deployments-claim0
         persistentVolumeClaim:
@@ -272,7 +437,7 @@ spec:
         volumeMounts:
         - mountPath: /etc/deviceauth/rsa/private.pem
           name: mender-device-auth-claim0
-      restartPolicy: Always
+      # restartPolicy: Always
       volumes:
       - name: mender-device-auth-claim0
         persistentVolumeClaim:
@@ -305,7 +470,7 @@ spec:
         image: mendersoftware/gui
         name: mender-gui
         resources: {}
-      restartPolicy: Always
+      # restartPolicy: Always
 status: {}
 ---
 apiVersion: extensions/v1beta1
@@ -334,7 +499,7 @@ spec:
         image: mendersoftware/inventory
         name: mender-inventory
         resources: {}
-      restartPolicy: Always
+      # restartPolicy: Always
 status: {}
 ---
 apiVersion: v1
@@ -415,7 +580,7 @@ spec:
           name: mender-redis-claim1
         - mountPath: /var/lib/redis
           name: mender-redis-claim2
-      restartPolicy: Always
+      # restartPolicy: Always
       volumes:
       - name: mender-redis-claim0
         persistentVolumeClaim:
@@ -473,7 +638,7 @@ spec:
         volumeMounts:
         - mountPath: /etc/useradm/rsa/private.pem
           name: mender-useradm-claim0
-      restartPolicy: Always
+      # restartPolicy: Always
       volumes:
       - name: mender-useradm-claim0
         persistentVolumeClaim:
@@ -508,7 +673,7 @@ spec:
         image: minio/minio
         name: minio
         resources: {}
-      restartPolicy: Always
+      # restartPolicy: Always
 status: {}
 ---
 apiVersion: v1
@@ -577,7 +742,7 @@ spec:
           name: storage-proxy-claim0
         - mountPath: /var/www/storage-proxy/cert/private.key
           name: storage-proxy-claim1
-      restartPolicy: Always
+      # restartPolicy: Always
       volumes:
       - name: storage-proxy-claim0
         persistentVolumeClaim:
@@ -606,3 +771,207 @@ spec:
     io.kompose.service: storage-proxy
 status:
   loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f ../docker-compose.demo.yml convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mender-api-gateway
+  name: mender-api-gateway
+spec:
+  type: NodePort
+  ports:
+  - name: "443"
+    port: 443
+    targetPort: 443
+  selector:
+    io.kompose.service: mender-api-gateway
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-mender-useradm
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    service: mender-mongo-useradm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-mender-device-auth
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    service: mender-mongo-device-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-mender-inventory
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    service: mender-mongo-inventory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-deployments
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    service: mongo-deployments
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mender-gui
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    service: mender-gui
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mender-useradm
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    service: mender-useradm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mender-device-auth
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    service: mender-device-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mender-inventory
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    service: mender-inventory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mender-deployments
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    service: mender-deployments
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: mender-mongo-deployments
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: mender-mongo-deployments
+    spec:
+      containers:
+      - image: mongo:latest
+        name: mender-mongo-deployments
+        resources: {}
+     # restartPolicy: Always
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: mender-mongo-device-auth
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: mender-mongo-device-auth
+    spec:
+      containers:
+      - image: mongo:latest
+        name: mender-mongo-device-auth
+        resources: {}
+     # restartPolicy: Always
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: mender-mongo-inventory
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: mender-mongo-inventory
+    spec:
+      containers:
+      - image: mongo:latest
+        name: mender-mongo-inventory
+        resources: {}
+     # restartPolicy: Always
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: mender-mongo-useradm
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: mender-mongo-useradm
+    spec:
+      containers:
+      - image: mongo:latest
+        name: mender-mongo-useradm
+        resources: {}
+     # restartPolicy: Always
+status: {}
